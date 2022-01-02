@@ -1,5 +1,3 @@
-ARG ARCH=amd64
-
 FROM golang:alpine AS runner-compilation
 
 ARG ARCH
@@ -11,18 +9,20 @@ RUN apk add --no-cache git && \
     git clone https://github.com/drone-runners/drone-runner-docker -b "${RUNNER_VERSION}" && \
     cd drone-runner-docker && \
     GOOS=linux GOARCH=${ARCH} go build -o release/linux/${ARCH}/drone-runner-docker
-    
+
 
 
 FROM alpine:latest as tmate-installation
 
 ARG ARCH
+ARG ARCH_AUX
+ARG VARIANT
 ARG TMATE_VERSION
 
 RUN apk add -U --no-cache ca-certificates wget && \
-    wget https://github.com/tmate-io/tmate/releases/download/${TMATE_VERSION}/tmate-${TMATE_VERSION}-static-linux-${ARCH}.tar.xz && \
-    tar -xf tmate-${TMATE_VERSION}-static-linux-${ARCH}.tar.xz && \
-    mv tmate-${TMATE_VERSION}-static-linux-${ARCH}/tmate /bin/ && \
+    wget https://github.com/tmate-io/tmate/releases/download/${TMATE_VERSION}/tmate-${TMATE_VERSION}-static-linux-"${ARCH}""${ARCH_AUX:-}""${VARIANT:-}".tar.xz && \
+    tar -xf tmate-${TMATE_VERSION}-static-linux-"${ARCH}""${ARCH_AUX:-}""${VARIANT:-}".tar.xz && \
+    mv tmate-${TMATE_VERSION}-static-linux-"${ARCH}""${ARCH_AUX:-}""${VARIANT:-}"/tmate /bin/ && \
     chmod +x /bin/tmate
 
 
