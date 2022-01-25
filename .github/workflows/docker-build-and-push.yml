@@ -222,4 +222,3 @@ jobs:
           run: |
              DOCKER_CLI_EXPERIMENTAL=enabled \
              docker manifest push ${{ env.IMAGE_NAME }}:latest
-
