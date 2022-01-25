@@ -1,5 +1,15 @@
 {
   "extends": [
-    "config:base"
-  ]
+    "config:base",
+    ":disableDependencyDashboard"
+  ],
+  "prHourlyLimit": 0,
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "automerge": true,
+      "automergeType": "branch"
+    }
+  ],
+  "platformAutomerge": true
 }
