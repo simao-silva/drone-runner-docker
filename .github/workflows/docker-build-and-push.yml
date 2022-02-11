@@ -216,7 +216,7 @@ jobs:
                 ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
                 ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
 
-        - name: push manifest for linux version
+        - name: push manifest for latest version
           run: |
              DOCKER_CLI_EXPERIMENTAL=enabled \
              docker manifest push ${{ env.IMAGE_NAME }}:latest
