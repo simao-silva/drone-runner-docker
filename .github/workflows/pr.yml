@@ -10,8 +10,8 @@ on:
 
 env:
   IMAGE_NAME: "simaofsilva/drone-runner-docker"
-  RUNNER_VERSION: "v1.8.0"
-  TMATE_VERSION: "2.4.0"
+  RUNNER_VERSION: "v1.8.0" # renovate: datasource=github-tags depName=drone-runners/drone-runner-docker
+  TMATE_VERSION: "2.4.0" # renovate: datasource=github-tags depName=tmate-io/tmate
   TAG: "test"
 
 jobs:
