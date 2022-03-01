@@ -13,7 +13,7 @@
   ],
   "regexManagers": [
     {
-     "versioningTemplate": "Runner version",
+     "description": "Runner version",
       "fileMatch": [
         "^\\.github\\/workflows\\/[^/]+\\.ya?ml$"
       ],
