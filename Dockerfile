@@ -12,7 +12,7 @@ RUN apk add --no-cache git && \
 
 
 
-FROM alpine:3.15.1 as tmate-installation
+FROM alpine:3.15.2 as tmate-installation
 
 ARG ARCH
 ARG ARCH_AUX
