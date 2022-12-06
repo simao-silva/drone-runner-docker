@@ -1,4 +1,4 @@
-FROM golang:1.19.3-alpine AS runner-compilation
+FROM golang:1.19.4-alpine AS runner-compilation
 
 ARG ARCH
 ARG RUNNER_VERSION
