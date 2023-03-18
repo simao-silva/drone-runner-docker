@@ -1,4 +1,4 @@
-FROM golang:1.20.2-alpine AS runner-compilation
+FROM golang:1.20.2-alpine@sha256:1db127655b32aa559e32ed3754ed2ea735204d967a433e4b605aed1dd44c5084 AS runner-compilation
 
 ARG ARCH
 ARG RUNNER_VERSION
@@ -12,7 +12,7 @@ RUN apk add --no-cache git && \
 
 
 
-FROM alpine:3.17.2 as tmate-installation
+FROM alpine:3.17.2@sha256:ff6bdca1701f3a8a67e328815ff2346b0e4067d32ec36b7992c1fdc001dc8517 as tmate-installation
 
 ARG ARCH
 ARG ARCH_AUX
