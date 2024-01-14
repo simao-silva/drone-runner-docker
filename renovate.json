@@ -1,19 +1,10 @@
 {
   "extends": [
-    "config:base",
+    "config:recommended",
     ":disableDependencyDashboard"
   ],
   "prHourlyLimit": 0,
   "packageRules": [
-    {
-      "matchManagers": [
-        "github-actions"
-      ],
-      "matchPackageNames": [
-        "docker/build-push-action"
-      ],
-      "allowedVersions": "<4"
-    },
     {
       "matchUpdateTypes": [
         "major",
@@ -21,15 +12,18 @@
         "patch",
         "pin",
         "pinDigest",
-        "digest"
+        "digest",
+        "replacement"
       ],
       "automerge": true,
-      "automergeType": "branch"
+      "automergeType": "pr",
+      "automergeStrategy": "squash"
     }
   ],
-  "regexManagers": [
+  "customManagers": [
     {
       "description": "Runner version",
+      "customType": "regex",
       "fileMatch": [
         "^\\.github\\/workflows\\/[^/]+\\.ya?ml$"
       ],
