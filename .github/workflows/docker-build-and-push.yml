@@ -74,19 +74,6 @@ jobs:
             echo "TAGS=${{ matrix.platform }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Normalise tags
-        id: normalise_tags
-        run: |
-          if [ "${{ matrix.platform }}" = "arm/v6" ]; then
-            echo "TAGS=arm32v6" >> $GITHUB_ENV
-          elif [ "${{ matrix.platform }}" = "arm/v7" ]; then
-            echo "TAGS=arm32v7" >> $GITHUB_ENV
-          elif [ "${{ matrix.platform }}" = "arm64" ]; then
-            echo "TAGS=arm64,arm64v8" >> $GITHUB_ENV
-          else
-            echo "TAGS=${{ matrix.platform }}" >> $GITHUB_ENV
-          fi
-
       - name: Build and push
         uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56 # v5.1.0
         with:
