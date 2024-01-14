@@ -112,38 +112,35 @@ jobs:
       - name: create manifest for version ${{ env.RUNNER_VERSION }}
         run: |
           docker manifest create --amend ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }} \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
 
-      # - name: push manifest for version ${{ env.RUNNER_VERSION }}
-      #   run: |
-      #     DOCKER_CLI_EXPERIMENTAL=enabled \
-      #     docker manifest push ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}
+      - name: push manifest for version ${{ env.RUNNER_VERSION }}
+        run: |
+          docker manifest push ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}
 
       - name: create manifest for linux version
         run: |
           docker manifest create --amend ${{ env.IMAGE_NAME }}:linux \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
 
-      # - name: push manifest for linux version
-      #   run: |
-      #     DOCKER_CLI_EXPERIMENTAL=enabled \
-      #     docker manifest push ${{ env.IMAGE_NAME }}:linux
+      - name: push manifest for linux version
+        run: |
+          docker manifest push ${{ env.IMAGE_NAME }}:linux
 
       - name: create manifest for latest version
         run: |
           docker manifest create --amend ${{ env.IMAGE_NAME }}:latest \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
-             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
 
-      # - name: push manifest for latest version
-      #   run: |
-      #     DOCKER_CLI_EXPERIMENTAL=enabled \
-      #     docker manifest push ${{ env.IMAGE_NAME }}:latest
+      - name: push manifest for latest version
+        run: |
+          docker manifest push ${{ env.IMAGE_NAME }}:latest
