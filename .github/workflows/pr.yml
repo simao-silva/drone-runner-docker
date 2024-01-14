@@ -15,20 +15,20 @@ env:
   TAG: "test"
 
 jobs:
-  build:
+  build-test-image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@v4.1.1
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
+        uses: docker/setup-qemu-action@v3.0.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
+        uses: docker/setup-buildx-action@v3.0.0
 
       - name: Build and export
-        uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56 # v5.1.0
+        uses: docker/build-push-action@v5.1.0
         with:
           context: .
           platforms: linux/amd64
@@ -42,3 +42,73 @@ jobs:
       - name: Test image
         run: |
           docker run --rm ${{ env.IMAGE_NAME }}:${{ env.TAG }} --help
+
+  build-multi-arch-images:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+          - arm/v6
+          - arm/v7
+          - arm64
+          - amd64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3.0.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.0.0
+
+      - name: Set docker build args
+        id: build_args
+        run: |
+          if [ $(echo "${{ matrix.platform }}" | grep -F "arm/") ]; then
+
+            echo "arch=arm" >> $GITHUB_OUTPUT
+            echo "arch_aux=32" >> $GITHUB_OUTPUT
+
+            if [ "${{ matrix.platform }}" == "arm/v6" ]; then
+              echo "variant=v6" >> $GITHUB_OUTPUT
+            elif [ "${{ matrix.platform }}" == "arm/v7" ]; then
+              echo "variant=v7" >> $GITHUB_OUTPUT
+            fi
+
+          elif [ "${{ matrix.platform }}" == "arm64" ]; then
+            echo "arch=arm64" >> $GITHUB_OUTPUT
+            echo "variant=v8" >> $GITHUB_OUTPUT
+
+          else
+            echo "arch=amd64" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Normalise tags
+        id: normalise_tags
+        run: |
+          if [ "${{ matrix.platform }}" == "arm/v6" ]; then
+            echo "TAGS=arm32v6" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.platform }}" == "arm/v7" ]; then
+            echo "TAGS=arm32v7" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.platform }}" == "arm64" ]; then
+            echo "TAGS=arm64" >> $GITHUB_OUTPUT
+          else
+            echo "TAGS=${{ matrix.platform }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build
+        uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56 # v5.1.0
+        with:
+          context: .
+          platforms: linux/${{ matrix.platform }}
+          load: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ steps.normalise_tags.outputs.TAGS }}
+          file: Dockerfile
+          build-args: |
+            RUNNER_VERSION=${{ env.RUNNER_VERSION }}
+            TMATE_VERSION=${{ env.TMATE_VERSION }}
+            ARCH=${{ steps.build_args.outputs.arch }}
+            ARCH_AUX=${{ steps.build_args.outputs.arch_aux }}
+            VARIANT=${{ steps.build_args.outputs.variant }}
