@@ -102,6 +102,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Setup crane
+        uses: imjasonh/setup-crane@v0.3
+
+      - name: create tag for arm64v8 platform
+        run: |
+          crane tag ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64 ${{ env.RUNNER_VERSION }}-linux-arm64v8
+
       - name: create manifest for version ${{ env.RUNNER_VERSION }}
         run: |
           docker manifest create --amend ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }} \
