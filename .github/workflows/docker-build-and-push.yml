@@ -19,8 +19,8 @@ jobs:
     strategy:
       matrix:
         platform:
-          - arm32v6
-          - arm32v7
+          - arm/v6
+          - arm/v7
           - arm64
           - amd64
     steps:
@@ -74,6 +74,19 @@ jobs:
             echo "TAGS=${{ matrix.platform }}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Normalise tags
+        id: normalise_tags
+        run: |
+          if [ "${{ matrix.platform }}" = "arm/v6" ]; then
+            echo "TAGS=arm32v6" >> $GITHUB_ENV
+          elif [ "${{ matrix.platform }}" = "arm/v7" ]; then
+            echo "TAGS=arm32v7" >> $GITHUB_ENV
+          elif [ "${{ matrix.platform }}" = "arm64" ]; then
+            echo "TAGS=arm64,arm64v8" >> $GITHUB_ENV
+          else
+            echo "TAGS=${{ matrix.platform }}" >> $GITHUB_ENV
+          fi
+
       - name: Build and push
         uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56 # v5.1.0
         with:
@@ -82,7 +95,7 @@ jobs:
           push: true
           provenance: false
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ matrix.platform }}
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ steps.normalise_tags.outputs.TAGS }}
           file: Dockerfile
           build-args: |
             RUNNER_VERSION=${{ env.RUNNER_VERSION }}
@@ -104,7 +117,6 @@ jobs:
 
       - name: create manifest for version ${{ env.RUNNER_VERSION }}
         run: |
-          DOCKER_CLI_EXPERIMENTAL=enabled \
           docker manifest create --amend ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }} \
              ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
              ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
@@ -118,7 +130,6 @@ jobs:
 
       - name: create manifest for linux version
         run: |
-          DOCKER_CLI_EXPERIMENTAL=enabled \
           docker manifest create --amend ${{ env.IMAGE_NAME }}:linux \
              ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
              ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
@@ -132,7 +143,6 @@ jobs:
 
       - name: create manifest for latest version
         run: |
-          DOCKER_CLI_EXPERIMENTAL=enabled \
           docker manifest create --amend ${{ env.IMAGE_NAME }}:latest \
              ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
              ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
