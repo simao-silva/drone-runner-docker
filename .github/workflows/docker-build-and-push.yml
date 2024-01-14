@@ -117,6 +117,7 @@ jobs:
           context: .
           platforms: linux/arm/${{ env.VARIANT }}
           push: true
+          provenance: false
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ env.ARCH }}32${{ env.VARIANT }}
           file: Dockerfile
@@ -155,6 +156,7 @@ jobs:
           context: .
           platforms: linux/arm/${{ env.VARIANT }}
           push: true
+          provenance: false
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ env.ARCH }}32${{ env.VARIANT }}
           file: Dockerfile
@@ -193,6 +195,7 @@ jobs:
           context: .
           platforms: linux/${{ env.ARCH }}/${{ env.VARIANT }}
           push: true
+          provenance: false
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ env.ARCH }}
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ env.ARCH }}${{ env.VARIANT }}
@@ -229,9 +232,10 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
 
-      - name: push manifest for version ${{ env.RUNNER_VERSION }}
-        run: |
-          docker manifest push ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}
+      # - name: push manifest for version ${{ env.RUNNER_VERSION }}
+      #   run: |
+      #     DOCKER_CLI_EXPERIMENTAL=enabled \
+      #     docker manifest push ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}
 
       - name: create manifest for linux version
         run: |
@@ -241,9 +245,10 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
 
-      - name: push manifest for linux version
-        run: |
-          docker manifest push ${{ env.IMAGE_NAME }}:linux
+      # - name: push manifest for linux version
+      #   run: |
+      #     DOCKER_CLI_EXPERIMENTAL=enabled \
+      #     docker manifest push ${{ env.IMAGE_NAME }}:linux
 
       - name: create manifest for latest version
         run: |
