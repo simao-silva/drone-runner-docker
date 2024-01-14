@@ -87,9 +87,9 @@ jobs:
           build-args: |
             RUNNER_VERSION=${{ env.RUNNER_VERSION }}
             TMATE_VERSION=${{ env.TMATE_VERSION }}
-            ARCH=${{ matrix.platform }}
-            ARCH_AUX=${{ steps.arch_aux.outputs.arch_aux }}
-            VARIANT=${{ steps.arch_aux.outputs.variant }}
+            ARCH=${{ steps.build_args.outputs.arch }}
+            ARCH_AUX=${{ steps.build_args.outputs.arch_aux }}
+            VARIANT=${{ steps.build_args.outputs.variant }}
 
   build-manifest:
     needs:
