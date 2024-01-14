@@ -14,8 +14,15 @@ env:
   TMATE_VERSION: "2.4.0" # renovate: datasource=github-tags depName=tmate-io/tmate
 
 jobs:
-  build-images:
+  build-base-images:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+          - arm32v6
+          - arm32v7
+          - arm64
+          - amd64
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
@@ -71,79 +78,68 @@ jobs:
         uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56 # v5.1.0
         with:
           context: .
-          platforms: linux/arm/${{ env.VARIANT }}
+          platforms: linux/${{ matrix.platform }}
           push: true
+          provenance: false
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ env.ARCH }}${{ env.ARCH_AUX }}${{ env.VARIANT }}
+            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ matrix.platform }}
           file: Dockerfile
           build-args: |
             RUNNER_VERSION=${{ env.RUNNER_VERSION }}
             TMATE_VERSION=${{ env.TMATE_VERSION }}
-            ARCH=${{ env.ARCH }}
-            ARCH_AUX=${{ env.ARCH_AUX }}
-            VARIANT=${{ env.VARIANT }}
+            ARCH=${{ matrix.platform }}
+            ARCH_AUX=${{ steps.arch_aux.outputs.arch_aux }}
+            VARIANT=${{ steps.arch_aux.outputs.variant }}
 
-      - name: Build and push for arm32v7
-        uses: docker/build-push-action@v5
-        env:
-          ARCH: arm
-          ARCH_AUX: 32
-          VARIANT: v7
+  build-manifest:
+    needs:
+      - build-base-images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3
         with:
-          context: .
-          platforms: linux/arm/${{ env.VARIANT }}
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ env.ARCH }}${{ env.ARCH_AUX }}${{ env.VARIANT }}
-          file: Dockerfile
-          build-args: |
-            RUNNER_VERSION=${{ env.RUNNER_VERSION }}
-            TMATE_VERSION=${{ env.TMATE_VERSION }}
-            ARCH=${{ env.ARCH }}
-            ARCH_AUX=32
-            VARIANT=${{ env.VARIANT }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push for arm64
-        uses: docker/build-push-action@v5
-        env:
-          ARCH: arm64
-          VARIANT: v8
-        with:
-          context: .
-          platforms: linux/${{ env.ARCH }}/${{ env.VARIANT }}
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ env.ARCH }}
-            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ env.ARCH }}${{ env.VARIANT }}
-          file: Dockerfile
-          build-args: |
-            RUNNER_VERSION=${{ env.RUNNER_VERSION }}
-            TMATE_VERSION=${{ env.TMATE_VERSION }}
-            ARCH=${{ env.ARCH }}
-            VARIANT=${{ env.VARIANT }}
+      - name: create manifest for version ${{ env.RUNNER_VERSION }}
+        run: |
+          DOCKER_CLI_EXPERIMENTAL=enabled \
+          docker manifest create --amend ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }} \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
 
-      - name: Build and push for amd64
-        uses: docker/build-push-action@v5
-        env:
-          ARCH: amd64
-        with:
-          context: .
-          platforms: linux/${{ env.ARCH }}
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-${{ env.ARCH }}
-          file: Dockerfile
-          build-args: |
-            RUNNER_VERSION=${{ env.RUNNER_VERSION }}
-            TMATE_VERSION=${{ env.TMATE_VERSION }}
-            ARCH=${{ env.ARCH }}
+      # - name: push manifest for version ${{ env.RUNNER_VERSION }}
+      #   run: |
+      #     DOCKER_CLI_EXPERIMENTAL=enabled \
+      #     docker manifest push ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}
 
-      - name: Build and push tag latest
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/amd64
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-          file: Dockerfile
+      - name: create manifest for linux version
+        run: |
+          DOCKER_CLI_EXPERIMENTAL=enabled \
+          docker manifest create --amend ${{ env.IMAGE_NAME }}:linux \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
+
+      # - name: push manifest for linux version
+      #   run: |
+      #     DOCKER_CLI_EXPERIMENTAL=enabled \
+      #     docker manifest push ${{ env.IMAGE_NAME }}:linux
+
+      - name: create manifest for latest version
+        run: |
+          DOCKER_CLI_EXPERIMENTAL=enabled \
+          docker manifest create --amend ${{ env.IMAGE_NAME }}:latest \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64v8 \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
+             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
+
+      # - name: push manifest for latest version
+      #   run: |
+      #     DOCKER_CLI_EXPERIMENTAL=enabled \
+      #     docker manifest push ${{ env.IMAGE_NAME }}:latest
