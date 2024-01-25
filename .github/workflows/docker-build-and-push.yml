@@ -105,11 +105,11 @@ jobs:
       - name: Setup crane
         uses: imjasonh/setup-crane@00c9e93efa4e1138c9a7a5c594acd6c75a2fbf0c # v0.3
 
-      - name: create tag for arm64v8 platform
+      - name: Create tag "arm64v8"
         run: |
           crane tag ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm64 ${{ env.RUNNER_VERSION }}-linux-arm64v8
 
-      - name: create manifest for version ${{ env.RUNNER_VERSION }}
+      - name: Create manifest for tag "${{ env.RUNNER_VERSION }}"
         run: |
           docker manifest create --amend ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }} \
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
@@ -117,11 +117,11 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
 
-      - name: push manifest for version ${{ env.RUNNER_VERSION }}
+      - name: Push manifest for tag "${{ env.RUNNER_VERSION }}"
         run: |
           docker manifest push ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}
 
-      - name: create manifest for linux version
+      - name: Create manifest for tag "linux"
         run: |
           docker manifest create --amend ${{ env.IMAGE_NAME }}:linux \
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
@@ -129,11 +129,11 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
 
-      - name: push manifest for linux version
+      - name: Push manifest for tag "linux"
         run: |
           docker manifest push ${{ env.IMAGE_NAME }}:linux
 
-      - name: create manifest for latest version
+      - name: Create manifest for tag "latest"
         run: |
           docker manifest create --amend ${{ env.IMAGE_NAME }}:latest \
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-amd64 \
@@ -141,6 +141,6 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v7 \
             ${{ env.IMAGE_NAME }}:${{ env.RUNNER_VERSION }}-linux-arm32v6
 
-      - name: push manifest for latest version
+      - name: Push manifest for tag "latest"
         run: |
           docker manifest push ${{ env.IMAGE_NAME }}:latest
