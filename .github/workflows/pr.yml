@@ -25,7 +25,7 @@ jobs:
           - amd64
     services:
       registry:
-        image: registry:2@sha256:422c0234a2c2da49562207b72e3f8a206d0d956ecfa485f9517927867ac946f8
+        image: registry:2@sha256:fb9c9aef62af3955f6014613456551c92e88a67dcf1fc51f5f91bcbd1832813f
         ports:
           - 5000:5000
     steps:
