@@ -1,4 +1,4 @@
-FROM golang:1.22.5-alpine@sha256:31545fe5b4bc16d6797e47bb492a6122d9c387847b3b5ab3cd89a79e28465164 AS runner-compilation
+FROM golang:1.22.5-alpine@sha256:523be8675c81c86325fadcf2ff9be68802a716fa94b1e42679c4782e75b076bf AS runner-compilation
 
 ARG ARCH
 ARG RUNNER_VERSION
