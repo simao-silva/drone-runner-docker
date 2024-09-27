@@ -1,7 +1,7 @@
 name: Renovate validation
 
 on:
-  - push
+  push:
 
 jobs:
   renovate-config-validator:
