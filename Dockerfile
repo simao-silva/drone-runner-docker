@@ -12,7 +12,7 @@ RUN apk add --no-cache git && \
 
 
 
-FROM alpine:3.20.3@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d as tmate-installation
+FROM alpine:3.20.3@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d AS tmate-installation
 
 ARG ARCH
 ARG ARCH_AUX
@@ -33,9 +33,9 @@ ARG ARCH
 
 EXPOSE 3000
 
-ENV GODEBUG netdns=go
-ENV DRONE_PLATFORM_OS linux
-ENV DRONE_PLATFORM_ARCH ${ARCH}
+ENV GODEBUG=netdns=go
+ENV DRONE_PLATFORM_OS=linux
+ENV DRONE_PLATFORM_ARCH=${ARCH}
 
 COPY --from=tmate-installation /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=tmate-installation /bin/tmate /bin/
