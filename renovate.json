@@ -24,8 +24,8 @@
     {
       "description": "Runner version",
       "customType": "regex",
-      "fileMatch": [
-        "^\\.github\\/workflows\\/[^/]+\\.ya?ml$"
+      "managerFilePatterns": [
+        "/^\\.github\\/workflows\\/[^/]+\\.ya?ml$/"
       ],
       "matchStrings": [
         ".*VERSION: .(?<currentValue>.*). # renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>.*?))?\\n"
